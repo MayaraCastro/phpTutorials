@@ -1,0 +1,300 @@
+WEBVTT
+
+00:00:01.016 --> 00:00:03.146 align:middle
+Vamos a empezar a hacer más
+cosas con nuestra API...
+
+00:00:03.416 --> 00:00:06.866 align:middle
+¡así que es hora de darle
+vida con algunos data fixtures!
+
+00:00:07.536 --> 00:00:11.656 align:middle
+Para ello, me gusta utilizar Foundry
+junto con DoctrineFixturesBundle.
+
+00:00:11.916 --> 00:00:20.326 align:middle
+Así que ejecuta composer require foundry orm-fixtures
+--dev para instalar ambos como dependencias de dev.
+
+00:00:21.356 --> 00:00:27.186 align:middle
+Una vez que termine, ejecuta php bin/console
+make:factory Si no has utilizado Foundry antes,
+
+00:00:27.536 --> 00:00:33.656 align:middle
+para cada entidad, crea una clase fábrica que
+sea realmente buena para crear esa entidad.
+
+00:00:34.246 --> 00:00:37.626 align:middle
+Yo le daré a cero para
+generar la de DragonTreasure.
+
+00:00:38.436 --> 00:00:42.646 align:middle
+El resultado final es un nuevo archivo
+src/Factory/DragonTreasureFactory.php:
+
+00:00:43.416 --> 00:00:47.546 align:middle
+Esta clase es realmente buena
+creando objetos DragonTreasure.
+
+00:00:47.956 --> 00:00:51.136 align:middle
+¡Incluso tiene un montón de bonitos datos
+aleatorios listos para ser utilizados!
+
+00:00:51.916 --> 00:00:57.086 align:middle
+Para hacerlo aún más elegante, voy a
+pegar un poco de código que he dragonizado.
+
+00:00:57.666 --> 00:01:00.736 align:middle
+Ah, y también necesitamos una
+constante TREASURE_NAMES...
+
+00:01:01.076 --> 00:01:03.036 align:middle
+que también pegaré encima.
+
+00:01:03.716 --> 00:01:06.506 align:middle
+Puedes coger todo esto del bloque
+de código de esta página.
+
+00:01:07.426 --> 00:01:09.156 align:middle
+Bien, esta clase ya está lista.
+
+00:01:09.576 --> 00:01:16.926 align:middle
+Segundo paso: para crear realmente algunos
+accesorios, abre src/DataFixtures/AppFixtures.php.
+
+00:01:16.926 --> 00:01:18.426 align:middle
+Borraré el método load().
+
+00:01:19.026 --> 00:01:24.046 align:middle
+Todo lo que necesitamos es
+DragonTreasureFactory::createMany(40)
+
+00:01:24.626 --> 00:01:30.046 align:middle
+crear un buen montón de 40
+tesoros: ¡Probemos esto!
+
+00:01:30.576 --> 00:01:37.456 align:middle
+De vuelta a tu terminal, Ejecuta: symfony
+console doctrine:fixtures:load Di "sí" y...
+
+00:01:37.706 --> 00:01:39.086 align:middle
+¡parece que ha funcionado!
+
+00:01:39.706 --> 00:01:42.126 align:middle
+De vuelta a nuestros
+documentos API, actualiza...
+
+00:01:42.566 --> 00:01:45.176 align:middle
+y probemos la ruta de recogida GET.
+
+00:01:47.066 --> 00:01:48.066 align:middle
+Pulsa ejecutar.
+
+00:01:49.176 --> 00:01:50.576 align:middle
+¡Qué guay!
+
+00:01:50.806 --> 00:01:53.346 align:middle
+¡Mira todos esos preciosos tesoros!
+
+00:01:53.616 --> 00:01:55.556 align:middle
+Recuerda que hemos añadido 40.
+
+00:01:56.226 --> 00:01:57.686 align:middle
+Pero si te fijas bien...
+
+00:01:58.146 --> 00:02:04.156 align:middle
+aunque IDs no empiece por 1, podemos ver
+que aquí hay definitivamente menos de 40.
+
+00:02:04.626 --> 00:02:09.476 align:middle
+La respuesta dice hydra:totalItems:
+40, pero sólo muestra 25.
+
+00:02:10.446 --> 00:02:18.256 align:middle
+Aquí abajo, este hydra:view explica más o
+menos por qué: ¡hay paginación incorporada!
+
+00:02:18.776 --> 00:02:20.846 align:middle
+Ahora mismo estamos viendo la página 1..
+
+00:02:21.206 --> 00:02:25.556 align:middle
+y también podemos ver las URL de la
+última página y de la página siguiente.
+
+00:02:26.236 --> 00:02:31.156 align:middle
+Así que sí, las rutas API que devuelven
+una colección necesitan paginación...
+
+00:02:31.446 --> 00:02:32.816 align:middle
+igual que un sitio web.
+
+00:02:33.466 --> 00:02:36.176 align:middle
+Y con API Platform, simplemente funciona.
+
+00:02:36.976 --> 00:02:40.996 align:middle
+Para jugar con esto, vamos
+a /api/treasures.jsonld.
+
+00:02:42.376 --> 00:02:43.416 align:middle
+Esta es la página 1...
+
+00:02:43.996 --> 00:02:47.546 align:middle
+y luego podemos añadir
+?page=2 para ver la página 2.
+
+00:02:48.146 --> 00:02:50.646 align:middle
+Es lo más fácil que haré en todo el día.
+
+00:02:51.446 --> 00:02:55.426 align:middle
+Ahora, si lo necesitas, puedes cambiar
+un montón de opciones de paginación.
+
+00:02:56.116 --> 00:03:00.656 align:middle
+Veamos si podemos ajustar el número
+de elementos por página de 25 a 10.
+
+00:03:01.526 --> 00:03:04.776 align:middle
+Para empezar a indagar en la
+configuración, abre tu terminal y ejecuta:
+
+00:03:04.776 --> 00:03:10.566 align:middle
+php bin/console debug:config
+api_platform Hay muchas cosas que
+
+00:03:10.566 --> 00:03:12.686 align:middle
+puedes configurar en API Platform.
+
+00:03:12.946 --> 00:03:15.986 align:middle
+Y este comando nos muestra
+la configuración actual.
+
+00:03:16.556 --> 00:03:21.136 align:middle
+Así, por ejemplo, puedes añadir
+un title y un description a tu API.
+
+00:03:21.846 --> 00:03:24.516 align:middle
+Esto pasa a formar parte de
+la especificación OpenAPI...
+
+00:03:24.816 --> 00:03:27.226 align:middle
+y así aparece en tu documentación.
+
+00:03:28.386 --> 00:03:32.466 align:middle
+Si buscas pagination - no queremos
+el que está bajo graphql...
+
+00:03:32.756 --> 00:03:37.736 align:middle
+queremos la que está bajo collection - podemos ver
+varias opciones relacionadas con la paginación.
+
+00:03:38.246 --> 00:03:41.686 align:middle
+Pero, de nuevo, esto nos muestra
+la configuración actual...
+
+00:03:41.976 --> 00:03:45.346 align:middle
+no nos muestra necesariamente
+todas las claves posibles.
+
+00:03:46.226 --> 00:03:49.266 align:middle
+Para verlo, en lugar de debug:config, Ejecu ta:
+
+00:03:49.266 --> 00:03:55.106 align:middle
+php bin/console config:dump api_platform
+debug:config te muestra la configuración actual.
+
+00:03:56.776 --> 00:04:01.256 align:middle
+config:dump te muestra un árbol
+completo de configuraciones posibles.
+
+00:04:01.946 --> 00:04:05.706 align:middle
+Ahora... vemos pagination_items_per_page.
+
+00:04:06.176 --> 00:04:07.536 align:middle
+¡Eso parece lo que queremos!
+
+00:04:08.046 --> 00:04:09.746 align:middle
+Esto es realmente genial.
+
+00:04:10.246 --> 00:04:13.586 align:middle
+Todas estas opciones viven
+bajo algo llamado defaults.
+
+00:04:13.726 --> 00:04:18.206 align:middle
+Y son versiones en forma de serpiente
+de exactamente las mismas opciones
+
+00:04:18.306 --> 00:04:22.256 align:middle
+que encontrarás dentro
+del atributo ApiResource.
+
+00:04:22.936 --> 00:04:28.836 align:middle
+Establecer cualquiera de estas defaults en la configuración
+hace que ese sea el valor por defecto que se pasa
+
+00:04:28.836 --> 00:04:32.656 align:middle
+a esa opción para cada
+ApiResource de tu sistema.
+
+00:04:33.006 --> 00:04:34.046 align:middle
+Genial.
+
+00:04:35.006 --> 00:04:40.486 align:middle
+Así que, si quisiéramos cambiar los elementos por página
+globalmente, podríamos hacerlo con esta configuración.
+
+00:04:41.156 --> 00:04:46.856 align:middle
+O, si queremos cambiarlo sólo para un
+recurso, podemos hacerlo sobre la clase.
+
+00:04:47.806 --> 00:04:54.526 align:middle
+Busca el atributo ApiResource y añade
+paginationItemsPerPage ajustado a 10: De nuevo,
+
+00:04:54.736 --> 00:04:57.196 align:middle
+puedes ver que las opciones que ya tenemos...
+
+00:04:57.496 --> 00:04:59.716 align:middle
+están incluidas en la configuración defaults.
+
+00:05:01.736 --> 00:05:03.956 align:middle
+Muévete y vuelve a la página 1.
+
+00:05:05.216 --> 00:05:07.076 align:middle
+Y... ¡voilà!
+
+00:05:07.656 --> 00:05:09.206 align:middle
+Una lista mucho más corta.
+
+00:05:09.746 --> 00:05:12.876 align:middle
+Además, ahora hay 4 páginas
+de tesoros en lugar de 2.
+
+00:05:13.856 --> 00:05:20.446 align:middle
+Ah, y para tu información: también puedes hacer que
+el usuario de tu API pueda determinar cuántos elementos
+
+00:05:20.446 --> 00:05:23.356 align:middle
+mostrar por página mediante
+un parámetro de consulta.
+
+00:05:23.746 --> 00:05:25.696 align:middle
+Consulta la documentación
+para saber cómo hacerlo.
+
+00:05:26.746 --> 00:05:32.946 align:middle
+Bien, ahora que tenemos un montón de datos, vamos a añadir la
+posibilidad de que nuestros usuarios de la API Dragón busquen
+
+00:05:32.996 --> 00:05:34.896 align:middle
+y filtren entre los tesoros. Por
+
+00:05:35.266 --> 00:05:37.746 align:middle
+ejemplo, tal vez un dragón
+esté buscando un tesoro
+
+00:05:37.746 --> 00:05:41.716 align:middle
+de caramelos envueltos individualmente
+entre todo este botín.
+
+00:05:42.216 --> 00:05:43.096 align:middle
+Eso a continuación.

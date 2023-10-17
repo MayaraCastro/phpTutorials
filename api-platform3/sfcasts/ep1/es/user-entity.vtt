@@ -1,0 +1,227 @@
+WEBVTT
+
+00:00:01.036 --> 00:00:03.606 align:middle
+En este tutorial no hablaremos de seguridad.
+
+00:00:03.926 --> 00:00:07.166 align:middle
+Pero aún así, necesitamos
+el concepto de usuario...
+
+00:00:07.446 --> 00:00:11.066 align:middle
+porque cada tesoro de la base de
+datos será propiedad de un usuario...
+
+00:00:11.356 --> 00:00:12.746 align:middle
+o, en realidad, por un dragón.
+
+00:00:13.476 --> 00:00:16.476 align:middle
+Más adelante, utilizaremos esto para
+permitir a los usuarios de la API ver
+
+00:00:16.476 --> 00:00:20.056 align:middle
+qué tesoros pertenecen a qué
+usuario y un montón de cosas más.
+
+00:00:20.056 --> 00:00:23.366 align:middle
+Así que vamos a crear esa clase User.
+
+00:00:23.466 --> 00:00:29.016 align:middle
+Busca tu terminal y ejecuta: php bin/console
+make:user Podríamos utilizar make:entity,
+
+00:00:29.206 --> 00:00:34.466 align:middle
+pero make:user configurará un poco las cosas de
+seguridad que necesitaremos en un futuro tutorial.
+
+00:00:35.246 --> 00:00:39.296 align:middle
+Llamemos a la clase User, sí, vamos
+a almacenarlos en la base de datos,
+
+00:00:39.516 --> 00:00:42.436 align:middle
+y establezcamos email como
+campo identificador principal.
+
+00:00:43.106 --> 00:00:46.736 align:middle
+A continuación nos pregunta si necesitamos hash
+y comprobar las contraseñas de los usuarios.
+
+00:00:47.186 --> 00:00:52.766 align:middle
+Si en tu sistema se va a almacenar la versión hash
+de las contraseñas de los usuarios, di que sí.
+
+00:00:53.246 --> 00:00:55.536 align:middle
+Si tus usuarios no van a tener contraseñas
+
+00:00:55.866 --> 00:00:59.926 align:middle
+-o algún sistema externo comprueba
+las contraseñas- responde que no.
+
+00:01:00.486 --> 00:01:01.716 align:middle
+Di que sí a esto.
+
+00:01:03.536 --> 00:01:05.006 align:middle
+Esto no hizo mucho...
+
+00:01:05.276 --> 00:01:05.956 align:middle
+¡en el buen sentido!
+
+00:01:06.376 --> 00:01:09.596 align:middle
+Nos dio una entidad User,
+la clase repositorio...
+
+00:01:09.596 --> 00:01:13.106 align:middle
+y una pequeña actualización de
+config/packages/security.yaml.
+
+00:01:13.776 --> 00:01:17.626 align:middle
+Sí, sólo configura el proveedor
+de usuarios: nada especial.
+
+00:01:18.046 --> 00:01:20.826 align:middle
+Y de nuevo, hablaremos de
+ello en un futuro tutorial.
+
+00:01:21.646 --> 00:01:26.396 align:middle
+Vale, dentro del directorio src/Entity/,
+tenemos nuestra nueva clase de entidad User
+
+00:01:26.806 --> 00:01:29.566 align:middle
+con las propiedades id, email y password...
+
+00:01:30.176 --> 00:01:31.726 align:middle
+y getters y setters a continuación.
+
+00:01:32.116 --> 00:01:33.096 align:middle
+Nada del otro mundo.
+
+00:01:33.716 --> 00:01:36.996 align:middle
+Esto implementa dos interfaces que
+necesitamos para la seguridad...
+
+00:01:37.176 --> 00:01:39.196 align:middle
+pero ahora mismo no son importantes.
+
+00:01:39.946 --> 00:01:45.756 align:middle
+Ah, pero quiero añadir un campo más a esta
+clase: un username que podamos mostrar en la API.
+
+00:01:45.956 --> 00:01:49.506 align:middle
+Así que, vuelve a tu
+terminal y esta vez ejecuta:
+
+00:01:49.506 --> 00:01:53.866 align:middle
+php bin/console make:entity
+Actualiza la clase User,
+
+00:01:54.266 --> 00:01:58.756 align:middle
+añade una propiedad username, 255
+la longitud es buena, no nula...
+
+00:01:59.036 --> 00:02:02.706 align:middle
+y listo. Pulsa enter una vez más para salir.
+
+00:02:03.446 --> 00:02:04.596 align:middle
+Vuelve sobre la clase...
+
+00:02:05.036 --> 00:02:07.416 align:middle
+¡perfecto! Ahí está el nuevo campo.
+
+00:02:08.116 --> 00:02:12.496 align:middle
+Ya que estamos aquí, añade unique: true
+para que sea único en la base de datos.
+
+00:02:13.146 --> 00:02:14.186 align:middle
+¡Entidad terminada!
+
+00:02:14.646 --> 00:02:16.186 align:middle
+Hagamos una migración para ella.
+
+00:02:16.946 --> 00:02:22.406 align:middle
+De nuevo en el terminal Ejecuta::
+symfony console make:migration Luego...
+
+00:02:22.406 --> 00:02:25.126 align:middle
+gira y abre ese nuevo archivo de migración.
+
+00:02:26.536 --> 00:02:31.906 align:middle
+Sin sorpresas: crea la tabla
+user: Ciérralo y ejecútalo con:
+
+00:02:32.186 --> 00:02:37.636 align:middle
+symfony console
+doctrine:migrations:migrate ¡Genial!
+
+00:02:38.076 --> 00:02:42.576 align:middle
+Sin embargo, creo que nuestra nueva entidad
+se merece algunas fijaciones de datos jugosas.
+
+00:02:43.106 --> 00:02:45.686 align:middle
+Utilicemos Foundry como
+hicimos para DragonTreasure.
+
+00:02:45.686 --> 00:02:50.586 align:middle
+Empieza ejecutando php bin/console
+make:factory para generar la fábrica de User.
+
+00:02:52.076 --> 00:02:57.476 align:middle
+Como antes, en el directorio src/Factory/,
+tenemos una nueva clase - UserFactory -
+
+00:02:57.716 --> 00:03:00.266 align:middle
+que es realmente buena para crear objetos User.
+
+00:03:01.076 --> 00:03:05.526 align:middle
+Lo principal que tenemos que retocar es getDefaults()
+para que los datos sean aún mejores. Voy a
+
+00:03:05.526 --> 00:03:10.536 align:middle
+pegar nuevos contenidos para
+toda la clase, que puedes copiar
+
+00:03:10.536 --> 00:03:11.986 align:middle
+del bloque de código de esta página.
+
+00:03:12.716 --> 00:03:18.606 align:middle
+Esto actualiza getDefaults() para que tenga un poco
+más de chispa y establece password en password.
+
+00:03:19.006 --> 00:03:19.896 align:middle
+Lo sé, creativo.
+
+00:03:20.646 --> 00:03:25.196 align:middle
+También aprovecho un gancho de afterInstantiation
+para hacer hash de esa contraseña.
+
+00:03:25.196 --> 00:03:30.536 align:middle
+Por último, para crear realmente
+algunos accesorios, abre AppFixtures.
+
+00:03:31.176 --> 00:03:36.356 align:middle
+Aquí es bastante sencillo:
+UserFactory::createMany() y vamos a crear 10.
+
+00:03:37.546 --> 00:03:38.606 align:middle
+Veamos si ha funcionado
+
+00:03:38.946 --> 00:03:46.236 align:middle
+Gira y ejecuta: symfony console
+doctrine:fixtures:load ¡Sin errores!
+
+00:03:46.236 --> 00:03:51.536 align:middle
+Comprobación de estado: tenemos una entidad
+User y hemos creado una migración para ella.
+
+00:03:52.106 --> 00:03:55.096 align:middle
+Diablos, ¡incluso hemos cargado
+algunos schweet data fixtures!
+
+00:03:55.426 --> 00:03:58.156 align:middle
+Pero todavía no forma parte de nuestra API.
+
+00:03:58.356 --> 00:04:02.696 align:middle
+Si actualizas la documentación,
+todavía sólo aparece Treasure.
+
+00:04:03.246 --> 00:04:05.736 align:middle
+Hagamos que forme parte de
+nuestra API a continuación.

@@ -1,0 +1,276 @@
+WEBVTT
+
+00:00:00.036 --> 00:00:05.036 align:middle
+Algunos de nuestros tesoros de
+dragón están publicados y otros no.
+
+00:00:05.476 --> 00:00:10.796 align:middle
+Eso es gracias a DragonTreasureFactory, donde
+publicamos aleatoriamente algunos pero no otros.
+
+00:00:11.596 --> 00:00:15.216 align:middle
+Ahora mismo, la API devuelve
+hasta el último tesoro dragón.
+
+00:00:15.576 --> 00:00:17.666 align:middle
+En el futuro, vamos a hacer que
+
+00:00:17.666 --> 00:00:21.976 align:middle
+nuestra API devuelva automáticamente
+sólo los tesoros publicados.
+
+00:00:22.436 --> 00:00:26.766 align:middle
+Pero para empezar, al menos hagamos posible
+que nuestros clientes de la API puedan
+
+00:00:26.836 --> 00:00:29.376 align:middle
+filtrar los resultados no
+publicados si lo desean.
+
+00:00:30.136 --> 00:00:32.386 align:middle
+¿Cómo? Aprovechando los filtros. La API
+
+00:00:33.046 --> 00:00:38.716 align:middle
+Platform viene con un montón de filtros
+incorporados que te permiten filtrar las colecciones
+
+00:00:38.716 --> 00:00:42.136 align:middle
+de resultados por texto,
+booleanos, fechas y mucho más.
+
+00:00:42.916 --> 00:00:47.496 align:middle
+Funciona así: sobre tu clase,
+añade un atributo llamado ApiFilter.
+
+00:00:48.536 --> 00:00:51.956 align:middle
+Normalmente hay dos
+ingredientes que debes pasarle.
+
+00:00:52.686 --> 00:00:55.686 align:middle
+El primero es qué clase
+de filtro quieres utilizar.
+
+00:00:56.046 --> 00:01:01.676 align:middle
+Y si miras la documentación, hay un montón
+de ellas, como una llamada BooleanFilter
+
+00:01:01.676 --> 00:01:06.406 align:middle
+que utilizaremos ahora y otra llamada SearchFilter
+que utilizaremos dentro de unos minutos. Pasa
+
+00:01:07.526 --> 00:01:12.726 align:middle
+este BooleanFilter -el de ORM, ya que
+estamos utilizando el ORM Doctrine-
+
+00:01:12.876 --> 00:01:16.396 align:middle
+porque queremos permitir al usuario
+filtrar en un campo booleano. Lo
+
+00:01:16.396 --> 00:01:22.076 align:middle
+segundo que tienes que pasar es
+properties a una matriz de los campos
+
+00:01:22.076 --> 00:01:25.256 align:middle
+o propiedades en los que
+quieres utilizar este filtro.
+
+00:01:25.366 --> 00:01:29.146 align:middle
+Establécelo en isPublished: ¡Muy bien!
+
+00:01:29.566 --> 00:01:33.376 align:middle
+Vuelve a la documentación y
+comprueba la ruta de recolección GET.
+
+00:01:36.236 --> 00:01:37.456 align:middle
+Cuando probemos esto...
+
+00:01:37.866 --> 00:01:40.216 align:middle
+¡hay un nuevo campo isPublished!
+
+00:01:40.366 --> 00:01:44.096 align:middle
+Primero, pulsa "Ejecutar" sin configurarlo.
+
+00:01:44.776 --> 00:01:47.256 align:middle
+Cuando nos desplacemos
+hasta abajo, ¡allí vamos!
+
+00:01:47.536 --> 00:01:49.316 align:middle
+hydra:totalItems: 40.
+
+00:01:50.306 --> 00:01:54.586 align:middle
+Ahora establece isPublished
+en true e inténtalo de nuevo.
+
+00:01:55.266 --> 00:01:58.736 align:middle
+¡Sí! Ya tenemos hydra:totalItems: 16.
+
+00:01:58.916 --> 00:02:00.046 align:middle
+¡Está vivo!
+
+00:02:00.376 --> 00:02:02.736 align:middle
+Y comprueba cómo se produce el filtrado.
+
+00:02:03.146 --> 00:02:07.816 align:middle
+Es muy sencillo, mediante un parámetro
+de consulta: isPublished=true.
+
+00:02:08.676 --> 00:02:09.886 align:middle
+Y la cosa se pone más chula. Mira
+
+00:02:10.206 --> 00:02:15.416 align:middle
+la respuesta: tenemos hydra:view,
+que muestra la paginación
+
+00:02:15.726 --> 00:02:19.446 align:middle
+y ahora también tenemos un nuevo hydra:search.
+
+00:02:20.146 --> 00:02:26.576 align:middle
+Sí, API Platform documenta esta nueva
+forma de búsqueda en la respuesta.
+
+00:02:27.146 --> 00:02:33.326 align:middle
+Está diciendo: Oye, si quieres, puedes añadir
+un parámetro de consulta ?isPublished=true
+
+00:02:33.326 --> 00:02:34.756 align:middle
+para filtrar estos resultados.
+
+00:02:35.296 --> 00:02:36.716 align:middle
+Bastante guay.
+
+00:02:37.496 --> 00:02:41.456 align:middle
+Ahora bien, cuando lees sobre filtros
+en los documentos de la API Platform,
+
+00:02:41.796 --> 00:02:45.606 align:middle
+casi siempre lo muestran encima de
+la clase, como hemos hecho nosotros.
+
+00:02:46.046 --> 00:02:49.436 align:middle
+Pero también puedes poner el filtro
+encima de la propiedad a la que se refiere.
+
+00:02:50.036 --> 00:02:55.426 align:middle
+Observa: copia la línea ApiFilter,
+elimínala, y baja hasta $isPublished.
+
+00:02:56.796 --> 00:02:57.946 align:middle
+Pégala encima.
+
+00:02:58.806 --> 00:03:01.766 align:middle
+Y ahora, ya no necesitamos
+la opción properties...
+
+00:03:02.226 --> 00:03:06.546 align:middle
+API Platform lo resuelve por
+sí sola: ¿El resultado?
+
+00:03:06.856 --> 00:03:08.156 align:middle
+El mismo que antes.
+
+00:03:08.476 --> 00:03:11.676 align:middle
+No lo probaré, pero si echas un
+vistazo a la ruta de recogida,
+
+00:03:11.886 --> 00:03:14.636 align:middle
+sigue teniendo el campo de filtro isPublished.
+
+00:03:15.456 --> 00:03:16.246 align:middle
+¿Qué más podemos hacer?
+
+00:03:16.736 --> 00:03:19.616 align:middle
+Otro filtro realmente útil es SearchFilter.
+
+00:03:20.146 --> 00:03:23.926 align:middle
+Hagamos que sea posible buscar
+por texto en la propiedad title.
+
+00:03:24.436 --> 00:03:28.806 align:middle
+Es casi lo mismo: encima de
+$title, añade ApiFilter.
+
+00:03:28.806 --> 00:03:34.296 align:middle
+En este caso queremos SearchFilter:
+de nuevo, coge el del ORM.
+
+00:03:35.366 --> 00:03:37.726 align:middle
+Este filtro también acepta una opción.
+
+00:03:38.086 --> 00:03:41.186 align:middle
+Aquí puedes ver que, además de properties,
+
+00:03:41.436 --> 00:03:44.336 align:middle
+ApiFilter tiene un argumento llamado strategy.
+
+00:03:45.056 --> 00:03:49.616 align:middle
+Eso no se aplica a todos los
+filtros, pero sí a éste.
+
+00:03:49.966 --> 00:03:54.826 align:middle
+Establece strategy como partial:
+Esto nos permitirá buscar
+
+00:03:54.826 --> 00:03:57.816 align:middle
+en la propiedad title una coincidencia parcial.
+
+00:03:57.956 --> 00:03:59.656 align:middle
+Es una búsqueda "difusa".
+
+00:04:00.086 --> 00:04:03.546 align:middle
+Otras estrategias son exact, start y más.
+
+00:04:03.546 --> 00:04:05.436 align:middle
+¡Vamos a intentarlo!
+
+00:04:05.916 --> 00:04:07.276 align:middle
+Actualiza la página de documentos.
+
+00:04:07.796 --> 00:04:12.766 align:middle
+Y... ahora la ruta de la colección
+tiene otro cuadro de filtro.
+
+00:04:13.496 --> 00:04:16.346 align:middle
+Busca rare y pulsa Ejecutar.
+
+00:04:17.386 --> 00:04:18.676 align:middle
+Veamos, aquí abajo...
+
+00:04:20.486 --> 00:04:25.116 align:middle
+¡sí! Al parecer, 15 de los resultados
+tienen rare en algún lugar de title.
+
+00:04:25.526 --> 00:04:30.716 align:middle
+Y de nuevo, esto funciona añadiendo
+un simple ?name=rare a la URL.
+
+00:04:32.026 --> 00:04:38.556 align:middle
+Oh, hagamos también que el campo
+description se pueda buscar: Y ahora...
+
+00:04:39.876 --> 00:04:42.226 align:middle
+¡también aparece en la API!
+
+00:04:42.936 --> 00:04:45.246 align:middle
+El SearchFilter es fácil de configurar...
+
+00:04:45.466 --> 00:04:48.146 align:middle
+pero es una búsqueda difusa bastante simple.
+
+00:04:48.146 --> 00:04:54.536 align:middle
+Si quieres algo más complejo, como
+ElasticSearch, API Platform lo admite.
+
+00:04:54.936 --> 00:04:59.066 align:middle
+Incluso puedes crear tus propios filtros
+personalizados, cosa que haremos en un futuro tutorial.
+
+00:04:59.996 --> 00:05:06.026 align:middle
+Muy bien: a continuación, veamos dos
+filtros más: uno sencillo y otro extraño...
+
+00:05:06.486 --> 00:05:11.326 align:middle
+Un filtro que, en lugar de ocultar los
+resultados, permite al usuario de la API
+
+00:05:11.326 --> 00:05:13.956 align:middle
+ocultar determinados campos en la respuesta.

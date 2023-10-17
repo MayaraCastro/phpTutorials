@@ -1,0 +1,408 @@
+WEBVTT
+
+00:00:01.036 --> 00:00:04.956 align:middle
+En nuestra aplicación, cada DragonTreasure
+debe pertenecer a un único dragón...
+
+00:00:05.286 --> 00:00:06.856 align:middle
+o User en nuestro sistema.
+
+00:00:07.676 --> 00:00:11.126 align:middle
+Para configurar esto, olvídate
+por un momento de la API
+
+00:00:11.126 --> 00:00:13.466 align:middle
+y modelémoslo en la base de datos.
+
+00:00:14.046 --> 00:00:15.666 align:middle
+Ejecuta: en tu terminal:
+
+00:00:15.666 --> 00:00:20.716 align:middle
+php bin/console make:entity
+Modifiquemos la entidad DragonTreasure
+
+00:00:20.846 --> 00:00:22.436 align:middle
+para añadir una propiedad owner...
+
+00:00:22.436 --> 00:00:25.636 align:middle
+y entonces esto será una relación ManyToOne.
+
+00:00:26.276 --> 00:00:28.456 align:middle
+Si no estás seguro de
+qué relación necesitas,
+
+00:00:28.676 --> 00:00:31.996 align:middle
+siempre puedes escribir relation y
+obtendrás un pequeño asistente.
+
+00:00:33.236 --> 00:00:34.856 align:middle
+Esto será una relación con User...
+
+00:00:35.366 --> 00:00:39.846 align:middle
+y luego te preguntará si la nueva propiedad
+owner puede ser nula en la base de datos.
+
+00:00:40.436 --> 00:00:42.716 align:middle
+Cada DragonTreasure debe
+tener un propietario...
+
+00:00:42.876 --> 00:00:44.056 align:middle
+así que di "no".
+
+00:00:44.946 --> 00:00:48.476 align:middle
+A continuación: ¿queremos mapear
+el otro lado de la relación?
+
+00:00:48.976 --> 00:00:54.556 align:middle
+Básicamente, ¿queremos poder decir
+$user->getDragonTreasures() en nuestro código?
+
+00:00:55.156 --> 00:00:56.886 align:middle
+Voy a decir "sí" a esto.
+
+00:00:57.286 --> 00:00:59.666 align:middle
+Y puede que respondas "sí" por dos razones.
+
+00:01:00.086 --> 00:01:05.186 align:middle
+O bien porque poder decir
+$user->getDragonTreasures() sería útil
+
+00:01:05.186 --> 00:01:10.986 align:middle
+en tu código o, como veremos un poco más
+adelante, porque quieres poder obtener un User
+
+00:01:10.986 --> 00:01:15.656 align:middle
+en tu API y ver al instante qué tesoros tiene.
+
+00:01:16.536 --> 00:01:20.756 align:middle
+En cualquier caso, la propiedad -
+dragonTreasures dentro de User es fine....
+
+00:01:21.356 --> 00:01:24.356 align:middle
+y por último, para orphanRemoval, di no.
+
+00:01:24.716 --> 00:01:26.636 align:middle
+También hablaremos de eso más adelante.
+
+00:01:27.346 --> 00:01:28.486 align:middle
+Y... ¡listo!
+
+00:01:28.786 --> 00:01:29.936 align:middle
+Pulsa intro para salir.
+
+00:01:30.696 --> 00:01:33.426 align:middle
+Así que esto no tiene nada
+que ver con la API Platform.
+
+00:01:33.796 --> 00:01:39.966 align:middle
+Nuestra entidad DragonTreasure tiene ahora una nueva
+propiedad owner con los métodos getOwner() y setOwner().
+
+00:01:41.076 --> 00:01:44.476 align:middle
+Y en User tenemos una nueva
+propiedad dragonTreasures,
+
+00:01:44.586 --> 00:01:47.286 align:middle
+que es un OneToMany de vuelta a
+DragonTreasure. En la parte inferior, se ha
+
+00:01:48.066 --> 00:01:50.556 align:middle
+generado getDragonTreasures(),
+
+00:01:50.896 --> 00:01:53.596 align:middle
+addDragonTreasure(), y removeDragonTreasure().
+
+00:01:53.966 --> 00:01:55.486 align:middle
+Algo muy estándar.
+
+00:01:56.496 --> 00:01:58.186 align:middle
+Vamos a crear una migración para esto:
+
+00:01:58.536 --> 00:02:03.516 align:middle
+symfony console make:migration Haremos
+nuestra doble comprobación estándar
+
+00:02:03.656 --> 00:02:06.146 align:middle
+para asegurarnos de que la migración
+no está intentando minar bitcoin.
+
+00:02:06.676 --> 00:02:09.526 align:middle
+Sí, todo son aburridas consultas SQL.
+
+00:02:10.476 --> 00:02:13.486 align:middle
+Ejecútalo con: symfony console
+doctrine:migrations:migrate
+
+00:02:14.656 --> 00:02:17.896 align:middle
+Y nos explota en la cara.
+
+00:02:18.016 --> 00:02:20.326 align:middle
+¡Grosero! Pero...
+
+00:02:20.326 --> 00:02:22.156 align:middle
+no debería sorprenderte demasiado.
+
+00:02:22.676 --> 00:02:26.486 align:middle
+Ya tenemos unos 40 registros
+DragonTreasure en nuestra base de datos.
+
+00:02:27.046 --> 00:02:31.416 align:middle
+Así que cuando la migración intenta
+añadir la columna owner_id a la tabla
+
+00:02:31.746 --> 00:02:38.536 align:middle
+-que no permite nulos-, nuestra base de datos se
+queda perpleja: no tiene ni idea de qué valor
+
+00:02:38.536 --> 00:02:40.486 align:middle
+poner para esos tesoros existentes.
+
+00:02:41.206 --> 00:02:45.666 align:middle
+Si nuestra aplicación ya estuviera en producción,
+tendríamos que trabajar un poco más para solucionar esto.
+
+00:02:46.326 --> 00:02:48.456 align:middle
+Hablamos de ello en nuestro
+tutorial de Doctrine.
+
+00:02:48.926 --> 00:02:55.356 align:middle
+Pero como esto no está en producción, podemos hacer trampas
+y simplemente apagar y volver a encender la base de datos.
+
+00:02:56.166 --> 00:02:59.226 align:middle
+Para ello ejecuta: symfony
+console doctrine:database:drop
+
+00:02:59.226 --> 00:03:05.486 align:middle
+--force Luego: symfony console
+doctrine:database:create Y la migración,
+
+00:03:05.746 --> 00:03:08.436 align:middle
+que debería funcionar ahora que
+nuestra base de datos está vacía.
+
+00:03:08.976 --> 00:03:14.926 align:middle
+symfony console doctrine:migrations:migrate Por
+último, vuelve a añadir algunos datos con:
+
+00:03:14.926 --> 00:03:21.956 align:middle
+symfony console doctrine:fixtures:load
+Y oh, ¡esto falla por la misma razón!
+
+00:03:22.246 --> 00:03:25.086 align:middle
+Está intentando crear Tesoros
+del Dragón sin propietario.
+
+00:03:25.876 --> 00:03:28.056 align:middle
+Para solucionarlo, hay dos opciones.
+
+00:03:28.516 --> 00:03:35.946 align:middle
+En DragonTreasureFactory, añade un nuevo campo owner
+a getDefaults() configurado como UserFactory::new().
+
+00:03:36.616 --> 00:03:41.796 align:middle
+No voy a entrar en los detalles de Foundry -y
+Foundry tiene una gran documentación sobre
+
+00:03:41.796 --> 00:03:46.696 align:middle
+cómo trabajar con relaciones- pero esto
+creará un nuevo User cada vez que cree un
+
+00:03:46.696 --> 00:03:48.046 align:middle
+nuevo DragonTreasure...
+
+00:03:48.406 --> 00:03:50.266 align:middle
+y luego los relacionará.
+
+00:03:50.806 --> 00:03:52.866 align:middle
+Así que está bien tenerlo por defecto.
+
+00:03:53.366 --> 00:03:57.566 align:middle
+Pero en AppFixtures, anulemos
+eso para hacer algo más guay.
+
+00:03:58.296 --> 00:04:01.546 align:middle
+Mueve la llamada a DragonTreasureFactory
+después de UserFactory...
+
+00:04:02.006 --> 00:04:06.366 align:middle
+y pasa un segundo argumento, que es una
+forma de anular los valores por defecto.
+
+00:04:07.106 --> 00:04:12.856 align:middle
+Pasando una llamada de retorno, cada vez que
+se cree un DragonTreasure -es decir, 40 veces-
+
+00:04:13.266 --> 00:04:17.756 align:middle
+se llamará a este método y podremos
+devolver datos únicos que utilizaremos
+
+00:04:17.916 --> 00:04:20.956 align:middle
+para anular los valores
+por defecto de ese tesoro.
+
+00:04:21.686 --> 00:04:26.406 align:middle
+Devuelve owner ajustado a
+User::factory()->random().
+
+00:04:27.016 --> 00:04:30.366 align:middle
+Eso encontrará un objeto User
+aleatorio y lo establecerá como owner.
+
+00:04:30.846 --> 00:04:36.336 align:middle
+Así tendremos 40 DragonTreasures cada uno
+acaparado aleatoriamente por uno de estos 10 User s.
+
+00:04:37.056 --> 00:04:37.566 align:middle
+¡Vamos a probarlo!
+
+00:04:38.046 --> 00:04:41.586 align:middle
+Ejecuta: symfony console
+doctrine:fixtures:load Esta vez...
+
+00:04:42.066 --> 00:04:47.916 align:middle
+¡éxito! Vale, ahora DragonTreasure tiene
+una nueva propiedad de relación owner...
+
+00:04:48.206 --> 00:04:51.736 align:middle
+y User tiene una nueva propiedad
+de relación dragonTreasures.
+
+00:04:52.316 --> 00:04:55.476 align:middle
+¿Aparecerá... esa nueva
+propiedad owner en la API?
+
+00:04:55.476 --> 00:04:59.076 align:middle
+Prueba con la ruta GET del tesoro.
+
+00:05:02.336 --> 00:05:05.656 align:middle
+Y... ¡el nuevo campo no aparece!
+
+00:05:06.216 --> 00:05:07.156 align:middle
+¡Eso tiene sentido!
+
+00:05:07.506 --> 00:05:11.136 align:middle
+La propiedad owner no está dentro
+del grupo de normalización.
+
+00:05:11.716 --> 00:05:14.756 align:middle
+Así que si queremos exponer
+la propiedad owner en la API,
+
+00:05:15.456 --> 00:05:18.666 align:middle
+como cualquier otro campo,
+tenemos que añadirle grupos.
+
+00:05:19.376 --> 00:05:20.856 align:middle
+Copia los grupos de coolFactor...
+
+00:05:21.296 --> 00:05:22.366 align:middle
+y pégalos aquí.
+
+00:05:23.176 --> 00:05:26.046 align:middle
+Esto hace que la propiedad
+sea legible y escribible.
+
+00:05:26.476 --> 00:05:30.666 align:middle
+Y sí, más adelante aprenderemos a establecer la propiedad
+owner automáticamente para que el usuario de la API
+
+00:05:30.936 --> 00:05:34.586 align:middle
+no tenga que enviarla manualmente.
+
+00:05:35.316 --> 00:05:39.666 align:middle
+Pero por ahora, hacer que el cliente de la API
+envíe el campo owner funcionará de maravilla.
+
+00:05:40.506 --> 00:05:44.286 align:middle
+En cualquier caso, ¿qué aspecto
+tiene esta nueva propiedad owner?
+
+00:05:44.886 --> 00:05:46.366 align:middle
+Pulsa "Ejecutar" y...
+
+00:05:46.806 --> 00:05:50.656 align:middle
+¡guau! ¡La propiedad owner
+se establece en una URL!
+
+00:05:51.006 --> 00:05:54.586 align:middle
+Bueno, en realidad, el IRI de User.
+
+00:05:55.306 --> 00:05:56.626 align:middle
+Esto me encanta.
+
+00:05:57.006 --> 00:05:59.396 align:middle
+Cuando empecé a trabajar con la API Platform,
+
+00:05:59.456 --> 00:06:03.926 align:middle
+pensaba que las propiedades de relación
+podrían utilizar simplemente el id del objeto.
+
+00:06:04.316 --> 00:06:06.186 align:middle
+Como owner: 1.
+
+00:06:06.956 --> 00:06:09.076 align:middle
+Pero esto es mucho más útil...
+
+00:06:09.396 --> 00:06:13.846 align:middle
+porque le dice a nuestro cliente API exactamente
+cómo puede obtener más información
+
+00:06:13.846 --> 00:06:16.766 align:middle
+sobre este usuario: ¡sólo
+tiene que seguir la URL!
+
+00:06:17.346 --> 00:06:21.156 align:middle
+Así que, por defecto, una
+relación se devuelve como una URL.
+
+00:06:21.956 --> 00:06:25.056 align:middle
+Pero, ¿cómo se configura
+un campo de relación?
+
+00:06:25.836 --> 00:06:29.226 align:middle
+Actualiza la página, abre
+la ruta POST, inténtalo,
+
+00:06:30.126 --> 00:06:32.996 align:middle
+y pegaré todos los campos excepto owner.
+
+00:06:33.536 --> 00:06:35.336 align:middle
+¿Qué utilizamos para owner ?
+
+00:06:35.876 --> 00:06:36.476 align:middle
+No lo sé
+
+00:06:36.746 --> 00:06:39.286 align:middle
+Probemos a ponerle un id, como 1.
+
+00:06:40.116 --> 00:06:41.396 align:middle
+Momento de la verdad.
+
+00:06:41.776 --> 00:06:42.866 align:middle
+Pulsa ejecutar.
+
+00:06:43.446 --> 00:06:44.056 align:middle
+Veamos...
+
+00:06:44.616 --> 00:06:46.626 align:middle
+¡un código de estado 400!
+
+00:06:46.986 --> 00:06:54.226 align:middle
+Y comprueba el error: IRI esperado o documento
+anidado para el atributo owner, entero dado.
+
+00:06:54.946 --> 00:06:57.796 align:middle
+Así que le pasé el ID del propietario y...
+
+00:06:57.796 --> 00:06:59.336 align:middle
+no le gusta.
+
+00:07:00.036 --> 00:07:01.386 align:middle
+¿Qué debemos poner aquí?
+
+00:07:02.136 --> 00:07:04.436 align:middle
+Pues el IRI, ¡por supuesto!
+
+00:07:04.976 --> 00:07:07.016 align:middle
+Averigüemos más sobre eso a continuación.
