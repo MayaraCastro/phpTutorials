@@ -29,7 +29,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     shortName: 'Treasure',
     description: 'A rare and valuable treasure.',
     operations: [
-        new Get(),
+        new Get(
+            normalizationContext: [
+                'groups' => ['treasure:read', 'treasure:item:get'],
+            ],
+        ),
         new GetCollection(),
         new Post(),
         new Put(),
@@ -59,27 +63,27 @@ class DragonTreasure
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['treasure:read', 'treasure:write'])]
+    #[Groups(['treasure:read', 'treasure:write', 'user:read', 'user:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 50, maxMessage: 'Describe your loot in 50 chars or less')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['treasure:read'])]
+    #[Groups(['treasure:read', 'user:read'])]
     #[ApiFilter(SearchFilter::class, strategy:'partial')]
     #[Assert\NotBlank]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['treasure:read', 'treasure:write'])]
+    #[Groups(['treasure:read', 'treasure:write', 'user:read', 'user:write'])]
     #[ApiFilter(RangeFilter::class)]
     #[Assert\GreaterThanOrEqual(0)]
 
     private ?int $value = 0;
 
     #[ORM\Column]
-    #[Groups(['treasure:read', 'treasure:write'])]
+    #[Groups(['treasure:read', 'treasure:write', 'user:read'])]
     #[Assert\GreaterThanOrEqual(0)]
     #[Assert\LessThanOrEqual(10)]
     private ?int $coolFactor = 0;
@@ -91,6 +95,13 @@ class DragonTreasure
     #[ApiFilter(BooleanFilter::class)]
 
     private ?bool $isPublished = false;
+
+    #[ORM\ManyToOne(inversedBy: 'dragonTreasures')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['treasure:read', 'treasure:write'])]
+    #[Assert\Valid]
+
+    private ?User $owner = null;
 
     public function __construct(string $name = null)
     {
@@ -129,7 +140,7 @@ class DragonTreasure
     }
 
     #[SerializedName('description')]
-    #[Groups(['treasure:write'])]
+    #[Groups(['treasure:write', 'user:write'])]
     public function setTextDescription(string $description): static
     {
         $this->description = nl2br($description);
@@ -183,6 +194,18 @@ class DragonTreasure
     public function setIsPublished(bool $isPublished): static
     {
         $this->isPublished = $isPublished;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }
