@@ -22,6 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use function Symfony\Component\String\u;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
 #[ApiResource(
@@ -53,6 +54,20 @@ use Symfony\Component\Validator\Constraints as Assert;
         'csv' => 'text/csv',
     ]
 
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/treasures.{_format}',
+    shortName: 'Treasure',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'dragonTreasures',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: [
+        'groups' => ['treasure:read'],
+    ],
 )]
 #[ApiFilter(PropertyFilter::class)]
 class DragonTreasure
@@ -100,6 +115,9 @@ class DragonTreasure
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['treasure:read', 'treasure:write'])]
     #[Assert\Valid]
+    #[ApiFilter(SearchFilter::class, properties: [
+        'owner.username' => 'partial'
+    ])]
 
     private ?User $owner = null;
 
